@@ -300,11 +300,151 @@ p,h2,h3{text-wrap:balance}
 .closing .scene{position:relative}
 .art>.art-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s ease}
 .art>.art-img.contain{object-fit:contain}
+.art>.art-img.top{object-position:center top}
 .art.has-img>.art-img{opacity:1}
 .art.has-img>.fallback{visibility:hidden}
-.art>svg.fx{display:none;position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.art.has-img>svg.fx{display:block}
+.art>svg.fx{display:none;position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.art.has-img>svg.fx,.art.has-caricature>svg.fx{display:block}
 .couple{display:block;width:80%;height:auto;margin:-10px auto 16px}
+
+/* ---------- moving caricature overlay (transparent PNG over scene) ---------- */
+.caricature-stage{
+  position:absolute;inset:0;z-index:2;display:grid;place-items:end center;
+  padding:0 6% 2%;pointer-events:none;opacity:0;transition:opacity .6s ease;
+}
+.art.has-caricature>.caricature-stage{opacity:1}
+.caricature-fig{
+  display:block;width:min(68%, 300px);height:auto;transform-origin:50% 100%;
+  filter:drop-shadow(0 10px 18px rgba(8,6,24,.45));
+  animation:cariLive 3.6s ease-in-out infinite alternate;
+}
+@keyframes cariLive{
+  from{transform:translateY(5px) rotate(-1.1deg) scale(1)}
+  to{transform:translateY(-7px) rotate(1.3deg) scale(1.02)}
+}
+
+/* soft drift on full-bleed event photos */
+.art.has-img>.art-img.soft-live{
+  animation:softLive 9s ease-in-out infinite alternate;
+}
+@keyframes softLive{
+  from{transform:scale(1.02) translate(0,0)}
+  to{transform:scale(1.07) translate(1.2%,-1.4%)}
+}
+
+/* baraat elephant + horse overlays (stay visible over the photo) */
+.baraat-critters{
+  position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .6s ease;
+}
+.art.has-img>.baraat-critters{opacity:1;pointer-events:auto}
+.baraat-creature{
+  position:absolute;bottom:1%;height:auto;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  filter:drop-shadow(0 6px 10px rgba(74,20,32,.35));
+  transform-origin:50% 100%;transition:filter .25s ease;
+}
+.baraat-creature:hover,.baraat-creature:focus-visible{filter:drop-shadow(0 8px 14px rgba(74,20,32,.5)) brightness(1.06)}
+.baraat-creature:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.baraat-elephant{left:0;width:min(32%,140px);animation:elephantLive 2.8s ease-in-out infinite alternate}
+.baraat-horse{right:0;width:min(30%,128px);animation:horseLive 2.5s ease-in-out infinite alternate}
+@keyframes elephantLive{
+  from{transform:translate(0,5px) rotate(-1.2deg)}
+  to{transform:translate(10px,-4px) rotate(1.4deg)}
+}
+@keyframes horseLive{
+  from{transform:scaleX(-1) translate(0,4px) rotate(-1deg)}
+  to{transform:scaleX(-1) translate(8px,-5px) rotate(1.2deg)}
+}
+.baraat-creature.hop{animation:critterHop .55s ease-out}
+@keyframes critterHop{
+  0%{transform:translateY(0) scaleX(var(--flip,1))}
+  40%{transform:translateY(-18px) scaleX(var(--flip,1)) scale(1.04)}
+  100%{transform:translateY(0) scaleX(var(--flip,1))}
+}
+.baraat-horse.hop{--flip:-1}
+.baraat-elephant.hop{--flip:1}
+/* SVG fallback critters (when photo isn't loaded) */
+.baraat-svg-bob{transform-box:fill-box;transform-origin:center bottom;animation:elephantLive 2.8s ease-in-out infinite alternate}
+.baraat-svg-bob.horse{animation-name:horseSvgLive;animation-duration:2.5s}
+@keyframes horseSvgLive{
+  from{transform:translate(0,4px) rotate(-1deg)}
+  to{transform:translate(-8px,-5px) rotate(1.2deg)}
+}
+
+/* ---------- Sangeet bollywood stage ---------- */
+.ev-sangeet .art.has-img>.art-img{
+  filter:saturate(1.14) contrast(1.06) brightness(1.03);
+}
+.bollywood-stage{
+  position:absolute;inset:0;z-index:4;opacity:0;cursor:pointer;pointer-events:none;
+  -webkit-tap-highlight-color:transparent;transition:opacity .6s ease;
+}
+.art.has-img>.bollywood-stage{opacity:1;pointer-events:auto}
+.bollywood-stage::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 42%, transparent 45%, rgba(8,6,28,.5) 100%),
+    linear-gradient(180deg, rgba(255,200,140,.08), transparent 28%, transparent 72%, rgba(20,10,40,.35));
+}
+.film-rail{
+  position:absolute;top:0;bottom:0;width:16px;z-index:1;pointer-events:none;
+  background:
+    linear-gradient(#1a1428,#1a1428) padding-box,
+    repeating-linear-gradient(180deg,#1a1428 0 10px,#1a1428 10px 14px) padding-box;
+  box-shadow:inset 0 0 0 1px rgba(246,227,190,.35);
+}
+.film-rail::before{
+  content:"";position:absolute;left:3px;right:3px;top:6px;bottom:6px;
+  background:repeating-linear-gradient(180deg,
+    transparent 0 9px,
+    rgba(246,227,190,.85) 9px 13px,
+    transparent 13px 22px);
+  border-radius:2px;opacity:.9;
+}
+.film-rail-l{left:0;border-radius:0 2px 2px 0}
+.film-rail-r{right:0;border-radius:2px 0 0 2px}
+.bolly-spot{
+  position:absolute;width:55%;aspect-ratio:1;left:22%;top:8%;pointer-events:none;
+  background:radial-gradient(circle, rgba(255,230,170,.28) 0%, rgba(255,180,120,.08) 42%, transparent 68%);
+  mix-blend-mode:screen;animation:spotSweep 7s ease-in-out infinite alternate;
+}
+@keyframes spotSweep{
+  from{transform:translate(-6%,-2%) scale(1);opacity:.55}
+  to{transform:translate(10%,4%) scale(1.12);opacity:.95}
+}
+.bolly-marquee{
+  position:absolute;left:18px;right:18px;bottom:10px;z-index:2;pointer-events:none;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:6px 10px;border-radius:999px;
+  background:rgba(12,10,32,.55);border:1px solid rgba(246,227,190,.45);
+  color:#F6E3BE;font:600 .62rem/1 var(--body);letter-spacing:.28em;text-transform:uppercase;text-indent:.28em;
+  backdrop-filter:blur(4px);animation:marqueeGlow 2.4s ease-in-out infinite alternate;
+}
+@keyframes marqueeGlow{
+  from{box-shadow:0 0 0 0 rgba(255,200,120,.15);opacity:.82}
+  to{box-shadow:0 0 16px 2px rgba(255,200,120,.35);opacity:1}
+}
+.bolly-star{
+  position:absolute;left:var(--x);top:var(--y);z-index:3;
+  width:34px;height:34px;margin:0;padding:0;border:0;border-radius:50%;
+  background:rgba(255,255,255,.08);color:#FFE3A3;cursor:pointer;
+  display:grid;place-items:center;-webkit-tap-highlight-color:transparent;
+  animation:starTwinkle 2.2s ease-in-out infinite alternate;
+  transition:transform .2s ease,background .2s ease;
+}
+.bolly-star svg{width:16px;height:16px;fill:currentColor;filter:drop-shadow(0 0 6px rgba(255,220,140,.7))}
+.bolly-star:nth-child(odd){animation-duration:2.8s;animation-delay:-.6s}
+.bolly-star:hover,.bolly-star:focus-visible{background:rgba(255,220,160,.22);transform:scale(1.15)}
+.bolly-star:focus-visible{outline:2px solid #F6E3BE;outline-offset:2px}
+.bolly-star.pop{animation:starPop .55s ease-out}
+@keyframes starTwinkle{
+  from{opacity:.45;transform:scale(.92) rotate(-8deg)}
+  to{opacity:1;transform:scale(1.08) rotate(8deg)}
+}
+@keyframes starPop{
+  0%{transform:scale(1)}
+  40%{transform:scale(1.55) rotate(20deg)}
+  100%{transform:scale(1)}
+}
 
 /* ---------- reduced motion ---------- */
 @media (prefers-reduced-motion:reduce){
@@ -526,8 +666,8 @@ p,h2,h3{text-wrap:balance}
     <!-- Haldi -->
     <article class="ev ev-haldi reveal">
       <div class="ev-art scene art">
-        <img class="art-img" data-art="assets/img/haldi.webp" alt="Sunny haveli courtyard with a marigold-draped swing and brass bowls of haldi" decoding="async" loading="lazy" onload="this.parentNode.classList.add('has-img')" onerror="this.remove()">
-        <svg class="fallback" viewBox="0 0 400 260" role="img" aria-label="Illustration: sunny haveli courtyard with a marigold-draped swing and brass bowls of haldi">
+        <img class="art-img top" data-art="assets/Joyful Carnival Celebration Couple.jpg" alt="Neha and Saurabh celebrating at the carnival" decoding="async" loading="lazy" onload="this.parentNode.classList.add('has-img')" onerror="this.remove()">
+        <svg class="fallback" viewBox="0 0 400 300" role="img" aria-label="Illustration: sunny haveli courtyard with a marigold-draped swing and brass bowls of haldi">
           <defs><linearGradient id="hBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF3C6"/><stop offset="1" stop-color="#FDE3D5"/></linearGradient></defs>
           <rect width="400" height="260" fill="url(#hBg)"/>
           <g fill="#FCEFD3" stroke="#E7C98A" stroke-width="1.4">
@@ -577,11 +717,11 @@ p,h2,h3{text-wrap:balance}
             <use href="#spk" class="spark" x="220" y="140" width="6" height="6" style="animation-delay:1.5s"/>
           </g>
         </svg>
-        <svg class="fx" viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="#FFD54A"><use href="#spk" class="spark" x="40" y="220" width="10" height="10" style="animation-delay:0s"/><use href="#spk" class="spark" x="90" y="200" width="8" height="8" style="animation-delay:1.2s"/><use href="#spk" class="spark" x="140" y="232" width="7" height="7" style="animation-delay:2.4s"/><use href="#spk" class="spark" x="200" y="212" width="10" height="10" style="animation-delay:0.6s"/><use href="#spk" class="spark" x="262" y="226" width="8" height="8" style="animation-delay:1.9s"/><use href="#spk" class="spark" x="320" y="206" width="10" height="10" style="animation-delay:3s"/><use href="#spk" class="spark" x="362" y="232" width="7" height="7" style="animation-delay:1.5s"/><use href="#spk" class="spark" x="180" y="160" width="8" height="8" style="animation-delay:0.9s"/><use href="#spk" class="spark" x="300" y="150" width="7" height="7" style="animation-delay:2.7s"/><use href="#spk" class="spark" x="60" y="150" width="8" height="8" style="animation-delay:3.4s"/></g></svg>
+        <svg class="fx" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="#FFD54A"><use href="#spk" class="spark" x="40" y="220" width="10" height="10" style="animation-delay:0s"/><use href="#spk" class="spark" x="90" y="200" width="8" height="8" style="animation-delay:1.2s"/><use href="#spk" class="spark" x="140" y="232" width="7" height="7" style="animation-delay:2.4s"/><use href="#spk" class="spark" x="200" y="212" width="10" height="10" style="animation-delay:0.6s"/><use href="#spk" class="spark" x="262" y="226" width="8" height="8" style="animation-delay:1.9s"/><use href="#spk" class="spark" x="320" y="206" width="10" height="10" style="animation-delay:3s"/><use href="#spk" class="spark" x="362" y="232" width="7" height="7" style="animation-delay:1.5s"/><use href="#spk" class="spark" x="180" y="160" width="8" height="8" style="animation-delay:0.9s"/><use href="#spk" class="spark" x="300" y="150" width="7" height="7" style="animation-delay:2.7s"/><use href="#spk" class="spark" x="60" y="150" width="8" height="8" style="animation-delay:3.4s"/></g></svg>
       </div>
       <div class="ev-body">
         <p class="ev-k">Carnival</p>
-        <h3>Rangon Ki Subha</h3>
+        <h3>The Grand Jashn</h3>
         <dl>
           <div><dt>When</dt><dd>10 December 2026 · 11:00 AM</dd></div>
           <div><dt>Dress code</dt><dd>Playful pastels and cheerful daytime colours</dd></div>
@@ -592,8 +732,8 @@ p,h2,h3{text-wrap:balance}
     <!-- Sangeet -->
     <article class="ev ev-sangeet reveal">
       <div class="ev-art scene art">
-        <img class="art-img" data-art="assets/img/sangeet.webp" alt="Night terrace over the lake with fairy lights, a chandelier, dholak and harmonium" decoding="async" loading="lazy" onload="this.parentNode.classList.add('has-img')" onerror="this.remove()">
-        <svg class="fallback" viewBox="0 0 400 260" role="img" aria-label="Illustration: night terrace over the lake with fairy lights, a chandelier, dholak and harmonium">
+        <img class="art-img top" data-art="assets/romantic_couple_moving_caricature.gif" alt="Animated caricature of Neha and Saurabh at the sangeet" decoding="async" loading="lazy" onload="this.parentNode.classList.add('has-img')" onerror="this.remove()">
+        <svg class="fallback" viewBox="0 0 400 320" role="img" aria-label="Illustration: night terrace over the lake with fairy lights, a chandelier, dholak and harmonium">
           <defs>
             <linearGradient id="sBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#12163D"/><stop offset=".7" stop-color="#352258"/></linearGradient>
             <linearGradient id="sLake" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#241F52"/><stop offset="1" stop-color="#101335"/></linearGradient>
@@ -629,7 +769,7 @@ p,h2,h3{text-wrap:balance}
             <path d="M0 210h400v14H0z"/>
           </g>
           <g fill="none" stroke="#C98B77" stroke-width=".8" opacity=".8"><path d="M10 224v-10q6-6 12 0v10M34 224v-10q6-6 12 0v10M58 224v-10q6-6 12 0v10M82 224v-10q6-6 12 0v10M106 224v-10q6-6 12 0v10M130 224v-10q6-6 12 0v10M154 224v-10q6-6 12 0v10M178 224v-10q6-6 12 0v10M202 224v-10q6-6 12 0v10M226 224v-10q6-6 12 0v10M250 224v-10q6-6 12 0v10M274 224v-10q6-6 12 0v10M298 224v-10q6-6 12 0v10M322 224v-10q6-6 12 0v10M346 224v-10q6-6 12 0v10M370 224v-10q6-6 12 0v10"/></g>
-          <rect y="224" width="400" height="36" fill="#1E1433"/>
+          <rect y="224" width="400" height="96" fill="#1E1433"/>
           <!-- dholak -->
           <g transform="translate(58 222)">
             <path d="M0 8q30-10 60 0v16q-30 10-60 0z" fill="#B86A6E"/>
@@ -652,8 +792,27 @@ p,h2,h3{text-wrap:balance}
           <circle class="bokeh" cx="24" cy="190" r="11" fill="url(#goldBokeh)" style="animation-delay:-4s"/>
           <g fill="#FFE3A3"><use href="#spk" class="spark" x="120" y="150" width="6" height="6"/><use href="#spk" class="spark" x="300" y="150" width="7" height="7" style="animation-delay:2s"/></g>
         </svg>
-        <svg class="fx" viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="none" stroke-linecap="round"><path d="M0 14q100 52 200 12t200 12" stroke="#FFE3A3" stroke-width="5" stroke-dasharray=".1 16" class="tw1"/><path d="M0 14q100 52 200 12t200 12" stroke="#FFD0DA" stroke-width="5" stroke-dasharray=".1 16" stroke-dashoffset="8" class="tw2"/></g>
-          <circle class="bokeh" cx="60" cy="120" r="16" fill="url(#pinkBokeh)"/><circle class="bokeh" cx="330" cy="130" r="20" fill="url(#goldBokeh)" style="animation-delay:-3s"/><circle class="bokeh" cx="150" cy="110" r="10" fill="url(#goldBokeh)" style="animation-delay:-5s"/><circle class="bokeh" cx="270" cy="70" r="12" fill="url(#pinkBokeh)" style="animation-delay:-1.5s"/><circle class="bokeh" cx="370" cy="200" r="9" fill="url(#pinkBokeh)" style="animation-delay:-6s"/><circle class="bokeh" cx="24" cy="190" r="11" fill="url(#goldBokeh)" style="animation-delay:-4s"/></svg>
+        <div class="bollywood-stage" id="sangeetStage" aria-label="Sangeet scene — tap for filmi sparkles">
+          <span class="film-rail film-rail-l" aria-hidden="true"></span>
+          <span class="film-rail film-rail-r" aria-hidden="true"></span>
+          <span class="bolly-spot" aria-hidden="true"></span>
+          <button type="button" class="bolly-star" style="--x:8%;--y:14%" aria-label="Sparkle">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.2 6.8H21l-5.4 4 2.1 6.7L12 15.8 6.3 19.5l2.1-6.7L3 8.8h6.8z"/></svg>
+          </button>
+          <button type="button" class="bolly-star" style="--x:78%;--y:12%" aria-label="Sparkle">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.2 6.8H21l-5.4 4 2.1 6.7L12 15.8 6.3 19.5l2.1-6.7L3 8.8h6.8z"/></svg>
+          </button>
+          <button type="button" class="bolly-star" style="--x:86%;--y:48%" aria-label="Sparkle">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.2 6.8H21l-5.4 4 2.1 6.7L12 15.8 6.3 19.5l2.1-6.7L3 8.8h6.8z"/></svg>
+          </button>
+          <button type="button" class="bolly-star" style="--x:6%;--y:52%" aria-label="Sparkle">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.2 6.8H21l-5.4 4 2.1 6.7L12 15.8 6.3 19.5l2.1-6.7L3 8.8h6.8z"/></svg>
+          </button>
+          <span class="bolly-marquee" aria-hidden="true">Now showing · Picture abhi baaki hai</span>
+        </div>
+        <svg class="fx" viewBox="0 0 400 320" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="none" stroke-linecap="round"><path d="M0 14q100 52 200 12t200 12" stroke="#FFE3A3" stroke-width="5" stroke-dasharray=".1 16" class="tw1"/><path d="M0 14q100 52 200 12t200 12" stroke="#FFD0DA" stroke-width="5" stroke-dasharray=".1 16" stroke-dashoffset="8" class="tw2"/></g>
+          <circle class="bokeh" cx="60" cy="120" r="16" fill="url(#pinkBokeh)"/><circle class="bokeh" cx="330" cy="130" r="20" fill="url(#goldBokeh)" style="animation-delay:-3s"/><circle class="bokeh" cx="150" cy="110" r="10" fill="url(#goldBokeh)" style="animation-delay:-5s"/><circle class="bokeh" cx="270" cy="70" r="12" fill="url(#pinkBokeh)" style="animation-delay:-1.5s"/><circle class="bokeh" cx="370" cy="200" r="9" fill="url(#pinkBokeh)" style="animation-delay:-6s"/><circle class="bokeh" cx="24" cy="190" r="11" fill="url(#goldBokeh)" style="animation-delay:-4s"/>
+          <g fill="#FFE3A3"><use href="#spk" class="spark" x="150" y="210" width="8" height="8"/><use href="#spk" class="spark" x="230" y="190" width="7" height="7" style="animation-delay:1.4s"/><use href="#spk" class="spark" x="190" y="250" width="6" height="6" style="animation-delay:2.6s"/><use href="#spk" class="spark" x="80" y="80" width="9" height="9" style="animation-delay:.4s"/><use href="#spk" class="spark" x="320" y="90" width="8" height="8" style="animation-delay:1.8s"/><use href="#spk" class="spark" x="200" y="40" width="7" height="7" style="animation-delay:3.2s"/></g></svg>
       </div>
       <div class="ev-body">
         <p class="ev-k">Sangeet</p>
@@ -731,22 +890,22 @@ p,h2,h3{text-wrap:balance}
       </div>
     </article>
 
-    <!-- Shubh Milan -->
+    <!-- Shubh Milan / Baraat · Varmala -->
     <article class="ev ev-milan reveal">
       <div class="ev-art scene art">
-        <img class="art-img" data-art="assets/img/baraat.webp" alt="Golden morning ghat with a marigold mandap, sacred fire, and a baraat elephant and horse" decoding="async" loading="lazy" onload="this.parentNode.classList.add('has-img')" onerror="this.remove()">
-        <svg class="fallback" viewBox="0 0 400 260" role="img" aria-label="Illustration: golden morning ghat with a marigold mandap, sacred fire, and a baraat elephant and horse">
+        <img class="art-img top soft-live" data-art="assets/Romantic Varmala Under Floral Mandap.png" alt="Neha and Saurabh exchanging varmala under a floral mandap" decoding="async" loading="lazy" onload="this.parentNode.classList.add('has-img')" onerror="this.remove()">
+        <svg class="fallback" viewBox="0 0 400 320" role="img" aria-label="Illustration: golden morning ghat with a marigold mandap, sacred fire, and a baraat elephant and horse">
           <defs>
             <linearGradient id="mBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE8B0"/><stop offset="1" stop-color="#F5A650"/></linearGradient>
             <radialGradient id="mSun"><stop offset="0" stop-color="#FFF6DA"/><stop offset="1" stop-color="#FFF6DA" stop-opacity="0"/></radialGradient>
           </defs>
-          <rect width="400" height="260" fill="url(#mBg)"/>
+          <rect width="400" height="320" fill="url(#mBg)"/>
           <circle cx="200" cy="90" r="120" fill="url(#mSun)"/>
           <!-- ghat steps -->
-          <g><rect y="208" width="400" height="12" fill="#D08447"/><rect y="220" width="400" height="12" fill="#BD713A"/><rect y="232" width="400" height="12" fill="#A9612F"/><rect y="244" width="400" height="16" fill="#E7B777"/></g>
-          <g stroke="#FFF3D1" stroke-width="1.5" stroke-linecap="round" opacity=".7" class="shim"><path d="M40 252h30M150 254h50M300 251h40"/></g>
+          <g><rect y="248" width="400" height="12" fill="#D08447"/><rect y="260" width="400" height="12" fill="#BD713A"/><rect y="272" width="400" height="12" fill="#A9612F"/><rect y="284" width="400" height="36" fill="#E7B777"/></g>
+          <g stroke="#FFF3D1" stroke-width="1.5" stroke-linecap="round" opacity=".7" class="shim"><path d="M40 292h30M150 294h50M300 291h40"/></g>
           <!-- back pillars -->
-          <g fill="#A43A36"><rect x="148" y="92" width="7" height="116"/><rect x="245" y="92" width="7" height="116"/></g>
+          <g fill="#A43A36"><rect x="148" y="92" width="7" height="156"/><rect x="245" y="92" width="7" height="156"/></g>
           <!-- canopy -->
           <path d="M112 94Q200 18 288 94z" fill="#C0392B" stroke="#F7C24A" stroke-width="2"/>
           <path d="M140 94Q200 44 260 94" fill="none" stroke="#F7C24A" stroke-width="1.2" opacity=".8"/>
@@ -759,19 +918,19 @@ p,h2,h3{text-wrap:balance}
             <path d="M126 107v58M152 107v38M176 107v28M224 107v28M248 107v38M274 107v58" stroke="#FFD23F"/>
           </g>
           <!-- front pillars -->
-          <g fill="#7E1B22" stroke="#F7C24A" stroke-width="1"><rect x="114" y="100" width="10" height="110"/><rect x="276" y="100" width="10" height="110"/></g>
-          <g fill="#F7C24A"><rect x="111" y="130" width="16" height="4"/><rect x="273" y="130" width="16" height="4"/><rect x="111" y="200" width="16" height="6"/><rect x="273" y="200" width="16" height="6"/></g>
+          <g fill="#7E1B22" stroke="#F7C24A" stroke-width="1"><rect x="114" y="100" width="10" height="150"/><rect x="276" y="100" width="10" height="150"/></g>
+          <g fill="#F7C24A"><rect x="111" y="130" width="16" height="4"/><rect x="273" y="130" width="16" height="4"/><rect x="111" y="230" width="16" height="6"/><rect x="273" y="230" width="16" height="6"/></g>
           <!-- agni kund -->
-          <circle cx="200" cy="182" r="30" fill="url(#haloG)" class="glow"/>
-          <path d="M178 208l6-14h32l6 14z" fill="#8B3A1E" stroke="#F7C24A"/>
-          <path d="M184 194h32" stroke="#F7C24A" stroke-width="2"/>
-          <path class="flame" d="M200 150c9 14 14 22 14 31a14 14 0 0 1-28 0c0-9 5-17 14-31z" fill="url(#flameG)"/>
-          <path class="flame" style="animation-delay:.35s;animation-duration:1s" d="M190 166c5 8 7 12 7 17a7 7 0 0 1-14 0c0-5 3-9 7-17z" fill="url(#flameG)"/>
-          <path class="flame" style="animation-delay:.7s;animation-duration:1.1s" d="M211 164c5 8 7 12 7 17a7 7 0 0 1-14 0c0-5 3-9 7-17z" fill="url(#flameG)"/>
+          <circle cx="200" cy="212" r="30" fill="url(#haloG)" class="glow"/>
+          <path d="M178 238l6-14h32l6 14z" fill="#8B3A1E" stroke="#F7C24A"/>
+          <path d="M184 224h32" stroke="#F7C24A" stroke-width="2"/>
+          <path class="flame" d="M200 180c9 14 14 22 14 31a14 14 0 0 1-28 0c0-9 5-17 14-31z" fill="url(#flameG)"/>
+          <path class="flame" style="animation-delay:.35s;animation-duration:1s" d="M190 196c5 8 7 12 7 17a7 7 0 0 1-14 0c0-5 3-9 7-17z" fill="url(#flameG)"/>
+          <path class="flame" style="animation-delay:.7s;animation-duration:1.1s" d="M211 194c5 8 7 12 7 17a7 7 0 0 1-14 0c0-5 3-9 7-17z" fill="url(#flameG)"/>
           <!-- elephant (couple's artwork) -->
-          <image href="assets/baraat-elephant.webp" x="4" y="122" width="108" height="91" preserveAspectRatio="xMidYMax meet"/>
+          <g class="baraat-svg-bob"><image href="assets/baraat-elephant.webp" x="4" y="168" width="108" height="91" preserveAspectRatio="xMidYMax meet"/></g>
           <!-- horse (couple's artwork) -->
-          <image href="assets/baraat-horse.webp" x="297" y="131" width="98" height="82" preserveAspectRatio="xMidYMax meet"/>
+          <g class="baraat-svg-bob horse"><image href="assets/baraat-horse.webp" x="297" y="178" width="98" height="82" preserveAspectRatio="xMidYMax meet"/></g>
           <!-- rose petals -->
           <g fill="#C2185B">
             <ellipse class="petal" cx="40" cy="0" rx="3" ry="5"/>
@@ -784,7 +943,11 @@ p,h2,h3{text-wrap:balance}
             <ellipse class="petal" cx="270" cy="0" rx="2.6" ry="4.4" fill="#F28C12" style="animation-delay:6s"/>
           </g>
         </svg>
-        <svg class="fx" viewBox="0 0 400 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="#C2185B"><ellipse class="petal" cx="30" cy="0" rx="3" ry="5" fill="#C2185B" style="animation-delay:0s"/><ellipse class="petal" cx="90" cy="0" rx="3" ry="5" fill="#E53950" style="animation-delay:1.4s"/><ellipse class="petal" cx="150" cy="0" rx="3" ry="5" fill="#F28C12" style="animation-delay:3.1s"/><ellipse class="petal" cx="210" cy="0" rx="3" ry="5" fill="#C2185B" style="animation-delay:0.6s"/><ellipse class="petal" cx="270" cy="0" rx="3" ry="5" fill="#E53950" style="animation-delay:4.3s"/><ellipse class="petal" cx="330" cy="0" rx="3" ry="5" fill="#F28C12" style="animation-delay:2.2s"/><ellipse class="petal" cx="380" cy="0" rx="3" ry="5" fill="#C2185B" style="animation-delay:5.2s"/><ellipse class="petal" cx="120" cy="0" rx="3" ry="5" fill="#E53950" style="animation-delay:6s"/><ellipse class="petal" cx="250" cy="0" rx="3" ry="5" fill="#C2185B" style="animation-delay:7s"/></g></svg>
+        <div class="baraat-critters" aria-hidden="false">
+          <img class="baraat-creature baraat-elephant" data-art="assets/baraat-elephant.webp" alt="Decorated baraat elephant" width="216" height="182" decoding="async" loading="lazy" tabindex="0" role="button" onerror="this.remove()">
+          <img class="baraat-creature baraat-horse" data-art="assets/baraat-horse.webp" alt="Decorated baraat horse" width="196" height="164" decoding="async" loading="lazy" tabindex="0" role="button" onerror="this.remove()">
+        </div>
+        <svg class="fx" viewBox="0 0 400 320" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="#C2185B"><ellipse class="petal" cx="30" cy="0" rx="3" ry="5" fill="#C2185B" style="animation-delay:0s"/><ellipse class="petal" cx="90" cy="0" rx="3" ry="5" fill="#E53950" style="animation-delay:1.4s"/><ellipse class="petal" cx="150" cy="0" rx="3" ry="5" fill="#F28C12" style="animation-delay:3.1s"/><ellipse class="petal" cx="210" cy="0" rx="3" ry="5" fill="#C2185B" style="animation-delay:0.6s"/><ellipse class="petal" cx="270" cy="0" rx="3" ry="5" fill="#E53950" style="animation-delay:4.3s"/><ellipse class="petal" cx="330" cy="0" rx="3" ry="5" fill="#F28C12" style="animation-delay:2.2s"/><ellipse class="petal" cx="380" cy="0" rx="3" ry="5" fill="#C2185B" style="animation-delay:5.2s"/><ellipse class="petal" cx="120" cy="0" rx="3" ry="5" fill="#E53950" style="animation-delay:6s"/><ellipse class="petal" cx="250" cy="0" rx="3" ry="5" fill="#C2185B" style="animation-delay:7s"/></g></svg>
       </div>
       <div class="ev-body">
         <p class="ev-k">Baraat · Varmala</p>
@@ -848,7 +1011,7 @@ p,h2,h3{text-wrap:balance}
       </div>
       <div class="ev-body">
         <p class="ev-k">Phere</p>
-        <h3>The Wedding Vows</h3>
+        <h3>Saat Vachan</h3>
         <dl>
           <div><dt>When</dt><dd>Night of 11 December 2026 · 3:00 AM onwards</dd></div>
         </dl>
@@ -978,8 +1141,14 @@ p,h2,h3{text-wrap:balance}
     WHATSAPP_NUMBER: '',     // [PLACEHOLDER NUMBER] digits only with country code, e.g. '919876543210'
     MUSIC_SRC: 'assets/music.mp3', // royalty-free shehnai/santoor track; a gentle built-in santoor tune plays if missing
     WEDDING_START: '2026-12-10T11:00:00+05:30',
-    // Artwork you've added to assets/img/ (file names without extension), e.g. ['haldi', 'couple']
-    ART: []
+    // Artwork you've added to assets/ (file names without extension), e.g. ['haldi', 'couple']
+    ART: [
+      'Joyful Carnival Celebration Couple',
+      'romantic_couple_moving_caricature',
+      'Romantic Varmala Under Floral Mandap',
+      'baraat-elephant',
+      'baraat-horse'
+    ]
   };
   /* =================================================================== */
 
@@ -988,6 +1157,19 @@ p,h2,h3{text-wrap:balance}
   const root = document.documentElement;
   root.classList.add('js');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* tap/click the baraat elephant or horse for a little hop */
+  $$('.baraat-creature').forEach(el => {
+    const hop = () => {
+      if (reduce) return;
+      el.classList.remove('hop');
+      void el.offsetWidth;
+      el.classList.add('hop');
+    };
+    el.addEventListener('click', hop);
+    el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hop(); } });
+    el.addEventListener('animationend', e => { if (e.animationName === 'critterHop') el.classList.remove('hop'); });
+  });
 
   /* ---------- always start at the top: stop the browser restoring the old scroll spot on reload ---------- */
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
@@ -1024,6 +1206,28 @@ p,h2,h3{text-wrap:balance}
     }
     document.body.append(box);
     setTimeout(() => box.remove(), 6500);
+  }
+
+  /* ---------- Sangeet bollywood: tap stage or stars for filmi sparkles ---------- */
+  const sangeetStage = $('#sangeetStage');
+  if (sangeetStage) {
+    let cool = 0;
+    const filmiBurst = () => {
+      const now = Date.now();
+      if (now < cool) return;
+      cool = now + 700;
+      burst(36, 'gold');
+    };
+    sangeetStage.addEventListener('click', e => {
+      const star = e.target.closest('.bolly-star');
+      if (star) {
+        star.classList.remove('pop');
+        void star.offsetWidth;
+        star.classList.add('pop');
+        star.addEventListener('animationend', () => star.classList.remove('pop'), { once: true });
+      }
+      filmiBurst();
+    });
   }
 
   /* ---------- music (starts on the envelope tap, pauses when the tab is hidden) ---------- */
